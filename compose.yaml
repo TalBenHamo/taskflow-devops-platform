@@ -1,0 +1,19 @@
+services:
+  web:
+    build: .
+    container_name: taskflow-web
+    ports: 
+      - "5000:5000"
+
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: taskflow
+      POSTGRES_USER: taskflow_user
+      POSTGRES_PASSWORD: taskflow_password
+    volumes:
+         - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
