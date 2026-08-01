@@ -4,7 +4,8 @@ services:
     container_name: taskflow-web
     ports: 
       - "5000:5000"
-
+    environment:
+      DATABASE_URL: postgresql://taskflow_user:taskflow_password@db:5432/taskflow
 
   db:
     image: postgres:16
