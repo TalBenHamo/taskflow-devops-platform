@@ -5,6 +5,9 @@ services:
       - "5000:5000"
     environment:
       DATABASE_URL: postgresql://taskflow_user:taskflow_password@db:5432/taskflow
+    depends_on:
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:16
@@ -14,6 +17,8 @@ services:
       POSTGRES_PASSWORD: taskflow_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskflow_user -d taskflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
