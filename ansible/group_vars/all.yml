@@ -1,0 +1,5 @@
+---
+deploy_user: taskflow
+deploy_group: taskflow
+deploy_home: /home/taskflow
+deploy_public_key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"

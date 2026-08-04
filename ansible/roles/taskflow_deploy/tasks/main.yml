@@ -1,0 +1,46 @@
+---
+- name: Create TaskFlow application directory
+  ansible.builtin.file:
+    path: "{{ taskflow_app_directory }}"
+    state: directory
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_group }}"
+    mode: "0755"
+
+- name: Clone TaskFlow repository
+  ansible.builtin.git:
+    repo: "{{ taskflow_repo_url }}"
+    dest: "{{ taskflow_app_directory }}"
+    version: "{{ taskflow_repo_version }}"
+    update: true
+    force: true
+  become_user: "{{ deploy_user }}"
+
+- name: Start TaskFlow Docker Compose services
+  ansible.builtin.command:
+    cmd: docker compose up -d --build
+    chdir: "{{ taskflow_app_directory }}"
+  become_user: "{{ deploy_user }}"
+  register: compose_result
+  changed_when: >
+    "Started" in compose_result.stdout or
+    "Created" in compose_result.stdout or
+    "Recreated" in compose_result.stdout or
+    "Built" in compose_result.stdout
+
+- name: Wait for TaskFlow port
+  ansible.builtin.wait_for:
+    host: "127.0.0.1"
+    port: 5000
+    timeout: 180
+
+- name: Verify TaskFlow health endpoint
+  ansible.builtin.uri:
+    url: "{{ taskflow_health_url }}"
+    method: GET
+    status_code: 200
+    return_content: true
+  register: taskflow_health
+  retries: 10
+  delay: 5
+  until: taskflow_health.status == 200
