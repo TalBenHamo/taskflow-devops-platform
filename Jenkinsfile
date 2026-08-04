@@ -34,12 +34,24 @@ pipeline {
             }
         }
 
-        stage('Tag Image') {
-            steps {
-                sh 'docker tag taskflow-ci-web ghcr.io/talbenhamo/taskflow:${BUILD_NUMBER}'
-                sh 'docker tag taskflow-ci-web ghcr.io/talbenhamo/taskflow:latest'
-            }
+stage('Tag Image') {
+    steps {
+        script {
+            env.GIT_SHORT_SHA = sh(
+                script: 'git rev-parse --short HEAD',
+                returnStdout: true
+            ).trim()
         }
+
+        sh '''
+            docker tag taskflow-ci-web ghcr.io/talbenhamo/taskflow:${BUILD_NUMBER}
+            docker tag taskflow-ci-web ghcr.io/talbenhamo/taskflow:${GIT_SHORT_SHA}
+            docker tag taskflow-ci-web ghcr.io/talbenhamo/taskflow:latest
+        '''
+    }
+}
+
+
 
         stage('Push Image') {
             steps {
@@ -55,12 +67,47 @@ pipeline {
                             -u "$GHCR_USER" --password-stdin
 
                         docker push ghcr.io/talbenhamo/taskflow:${BUILD_NUMBER}
+                        docker push ghcr.io/talbenhamo/taskflow:${GIT_SHORT_SHA}
                         docker push ghcr.io/talbenhamo/taskflow:latest
                     '''
                 }
             }
         }
+
+        stage('Deploy to AWS') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'taskflow-aws-ssh',
+                        keyFileVariable: 'ANSIBLE_PRIVATE_KEY',
+                        usernameVariable: 'ANSIBLE_REMOTE_USER'
+                    )
+                ]) {
+                    sh '''
+                        cd ansible
+
+                        ansible-playbook deploy.yml \
+                            --private-key "$ANSIBLE_PRIVATE_KEY" \
+                            -u "$ANSIBLE_REMOTE_USER"
+                    '''
+                }
+            }
+        }
+
+        stage('Deployment Health Check') {
+            steps {
+                sh '''
+                    curl --fail \
+                        --retry 12 \
+                        --retry-delay 5 \
+                        http://18.117.242.253:5000/health
+                '''
+            }
+        }
     }
+
+    post {
+
 
     post {
         always {
