@@ -81,3 +81,36 @@ Additional hardening (dedicated deployment user, SSH restrictions, firewall conf
 ## Future Deployment
 
 Future project phases will deploy the application to AWS infrastructure using Terraform and Ansible, followed by Kubernetes and Helm.
+---
+
+# Ansible Automation
+
+The AWS EC2 server is configured automatically using Ansible.
+
+## Automation Tasks
+
+- Update the operating system package index
+- Install Docker Engine
+- Install Docker Compose
+- Install Git
+- Install Python 3 and pip
+- Enable and start the Docker service
+- Create a dedicated deployment user (`taskflow`)
+- Add the deployment user to the Docker group
+- Configure SSH public key authentication
+- Disable direct root SSH login
+- Disable SSH password authentication
+- Clone the TaskFlow repository
+- Deploy the application using Docker Compose
+- Verify the application health endpoint
+
+## Validation
+
+The playbook was executed successfully.
+
+A second execution completed with:
+
+- changed = 0
+- failed = 0
+
+This confirms that the automation is idempotent.

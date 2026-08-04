@@ -1,0 +1,5 @@
+---
+taskflow_repo_url: "https://github.com/TalBenHamo/taskflow-devops-platform.git"
+taskflow_repo_version: "main"
+taskflow_app_directory: "/opt/taskflow"
+taskflow_health_url: "http://localhost:5000/health"
