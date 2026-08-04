@@ -12,6 +12,7 @@ pipeline {
         stage('Validate') {
             steps {
                 sh 'python3 -m py_compile app/app.py'
+                sh 'ansible-playbook ansible/deploy.yml --syntax-check'
             }
         }
 
@@ -34,24 +35,22 @@ pipeline {
             }
         }
 
-stage('Tag Image') {
-    steps {
-        script {
-            env.GIT_SHORT_SHA = sh(
-                script: 'git rev-parse --short HEAD',
-                returnStdout: true
-            ).trim()
+        stage('Tag Image') {
+            steps {
+                script {
+                    env.GIT_SHORT_SHA = sh(
+                        script: 'git rev-parse --short HEAD',
+                        returnStdout: true
+                    ).trim()
+                }
+
+                sh '''
+                    docker tag taskflow-ci-web ghcr.io/talbenhamo/taskflow:${BUILD_NUMBER}
+                    docker tag taskflow-ci-web ghcr.io/talbenhamo/taskflow:${GIT_SHORT_SHA}
+                    docker tag taskflow-ci-web ghcr.io/talbenhamo/taskflow:latest
+                '''
+            }
         }
-
-        sh '''
-            docker tag taskflow-ci-web ghcr.io/talbenhamo/taskflow:${BUILD_NUMBER}
-            docker tag taskflow-ci-web ghcr.io/talbenhamo/taskflow:${GIT_SHORT_SHA}
-            docker tag taskflow-ci-web ghcr.io/talbenhamo/taskflow:latest
-        '''
-    }
-}
-
-
 
         stage('Push Image') {
             steps {
@@ -85,7 +84,6 @@ stage('Tag Image') {
                 ]) {
                     sh '''
                         cd ansible
-
                         ansible-playbook deploy.yml \
                             --private-key "$ANSIBLE_PRIVATE_KEY" \
                             -u "$ANSIBLE_REMOTE_USER"
@@ -107,12 +105,17 @@ stage('Tag Image') {
     }
 
     post {
-
-
-    post {
         always {
             sh 'docker compose -p taskflow-ci down -v || true'
             sh 'docker logout ghcr.io || true'
+        }
+
+        success {
+            echo 'TaskFlow build, test, publish and deployment completed successfully.'
+        }
+
+        failure {
+            echo 'TaskFlow pipeline failed. Review the failed stage and console output.'
         }
     }
 }
