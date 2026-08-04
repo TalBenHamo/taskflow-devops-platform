@@ -2,9 +2,12 @@
 
 ## Overview
 
-TaskFlow is a lightweight task and project management platform for small teams.
+TaskFlow is a lightweight task and project management platform designed for small teams.
 
-This project demonstrates a complete DevOps workflow, including containerization, database integration, automated testing, Continuous Integration (CI), and container image publishing.
+The project started as an internal task management solution for a remote-first company and later evolved into a reusable platform that demonstrates modern DevOps practices.
+
+This repository demonstrates a complete DevOps workflow, including containerization, database integration, automated testing, Continuous Integration (CI), Infrastructure as Code, and cloud-ready deployment.
+
 
 ---
 
