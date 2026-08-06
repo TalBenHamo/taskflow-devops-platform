@@ -114,3 +114,33 @@ A second execution completed with:
 - failed = 0
 
 This confirms that the automation is idempotent.
+
+
+
+
+
+---
+
+# Kubernetes Deployment
+
+TaskFlow is deployed to Kubernetes using separate manifests for the application and PostgreSQL.
+
+The Kubernetes deployment includes:
+
+- Dedicated `taskflow` namespace
+- ConfigMap and Secret
+- PersistentVolumeClaim for PostgreSQL
+- PostgreSQL Deployment and ClusterIP Service
+- TaskFlow Deployment with two replicas
+- Readiness and Liveness probes
+- Resource requests and limits
+- Non-root security context
+- Rolling update strategy
+- Rollback validation
+- PostgreSQL persistence validation
+- NGINX Ingress
+
+The application is available locally through:
+
+```text
+http://taskflow.local
