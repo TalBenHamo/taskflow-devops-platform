@@ -61,3 +61,10 @@ This directory contains runtime evidence for the TaskFlow DevOps Platform.
 - `17-kubernetes-ingress-health.png`  
   Ingress resource and successful health check through `taskflow.local`.
 
+## Helm
+
+- `18-helm-release-and-workloads.png`
+  Helm release and deployed Kubernetes workloads.
+
+- `19-helm-upgrade-rollback-history.png`
+  Helm upgrade, rollback history and application health validation.

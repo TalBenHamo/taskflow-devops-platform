@@ -144,3 +144,36 @@ The application is available locally through:
 
 ```text
 http://taskflow.local
+
+
+
+
+
+---
+
+# Helm Deployment
+
+After validating the raw Kubernetes manifests, the deployment was converted into a reusable Helm chart.
+
+The Helm chart includes:
+
+- Configurable values
+- PostgreSQL deployment
+- TaskFlow deployment
+- Services
+- Ingress
+- Persistent storage
+- ConfigMap
+- Secret
+- Upgrade support
+- Rollback support
+
+The chart was validated using:
+
+- helm lint
+- helm template
+- helm install
+- helm upgrade
+- helm rollback
+
+The application remained available after both upgrade and rollback operations.
