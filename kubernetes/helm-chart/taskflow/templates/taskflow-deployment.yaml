@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "taskflow.fullname" . }}
+  labels:
+    {{- include "taskflow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: application
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 5
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "taskflow.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: application
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "taskflow.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: application
+
+    spec:
+      terminationGracePeriodSeconds: 30
+
+      securityContext:
+        {{- toYaml .Values.taskflow.podSecurityContext | nindent 8 }}
+
+      containers:
+        - name: taskflow
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          securityContext:
+            {{- toYaml .Values.taskflow.securityContext | nindent 12 }}
+
+          ports:
+            - name: http
+              containerPort: {{ .Values.taskflow.containerPort }}
+
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "taskflow.fullname" . }}-secret
+                  key: DATABASE_URL
+
+          resources:
+            {{- toYaml .Values.taskflow.resources | nindent 12 }}
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: {{ .Values.taskflow.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.taskflow.probes.readiness.periodSeconds }}
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: {{ .Values.taskflow.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.taskflow.probes.liveness.periodSeconds }}
