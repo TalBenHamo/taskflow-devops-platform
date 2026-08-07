@@ -1,154 +1,137 @@
-# Challenges
+# Folder Explanation
 
-Throughout the development of TaskFlow, several technical challenges were encountered. Solving these issues significantly improved the reliability, automation and deployment process of the project.
+This document describes the repository structure of the TaskFlow DevOps Platform.
 
----
-
-# Docker Container Name Conflict
-
-Docker Compose originally used fixed container names.
-
-When Jenkins created a temporary CI environment, container name collisions caused the pipeline to fail.
-
-## Solution
-
-The fixed `container_name` configuration was removed, allowing Docker Compose to generate unique container names automatically.
-
----
-
-# Port Conflict
-
-The application uses port **5000**.
-
-Existing local containers occasionally occupied the port, preventing the CI environment from starting.
-
-## Solution
-
-The Jenkins pipeline now creates an isolated Docker Compose project and removes all temporary resources after each build.
-
----
-
-# PostgreSQL Startup Timing
-
-The Flask application sometimes started before PostgreSQL was ready.
-
-## Solution
-
-A PostgreSQL health check was introduced and the application waits until the database becomes healthy before starting.
-
----
-
-# Python Import Path
-
-Pytest initially failed because it could not locate the Flask application.
-
-## Solution
-
-The Jenkins pipeline explicitly defines:
-
-```bash
-PYTHONPATH=/app
+```text
+taskflow-devops-platform/
+├── app/
+├── ansible/
+├── docs/
+├── infra/
+├── kubernetes/
+├── monitoring/
+├── scripts/
+├── tests/
+├── Dockerfile
+├── compose.yaml
+├── Jenkinsfile
+└── README.md
 ```
 
-before executing the automated tests.
+## app/
 
----
+Contains the Flask application source code, templates, and Python dependencies.
 
-# Docker Permissions
+## ansible/
 
-The Jenkins service account was unable to execute Docker commands.
+Contains the Ansible automation used to configure and deploy the AWS server.
 
-## Solution
+It includes:
 
-The Jenkins user was added to the Docker group and the service was restarted.
+- Inventory
+- Playbooks
+- Variables
+- Roles
+- Linux configuration
+- Application deployment
 
----
+## docs/
 
-# Jenkins Memory Pressure
+Contains the project documentation.
 
-One pipeline execution terminated with exit code **137**, indicating insufficient available memory.
+It includes:
 
-## Solution
+- Architecture
+- Deployment explanation
+- Folder explanation
+- Challenges
+- Lessons learned
+- Future improvements
+- Screenshots
 
-Unused services, including Minikube, were stopped before running the pipeline, reducing memory consumption.
+## infra/
 
----
+Contains the Terraform Infrastructure as Code configuration used to provision AWS resources.
 
-# Kubernetes Image Pull
+## kubernetes/
 
-Minikube was initially unable to pull locally built Docker images.
+Contains the Kubernetes deployment resources.
 
-## Solution
+```text
+kubernetes/
+├── manifests/
+└── helm-chart/
+```
 
-Application images were loaded directly into the Minikube image cache before deployment.
+### manifests/
 
----
+Contains the native Kubernetes YAML resources, including:
 
-# Helm Chart Validation
+- Namespace
+- ConfigMap
+- Secret
+- Deployments
+- Services
+- PersistentVolumeClaim
+- Ingress
 
-The Helm chart required multiple validation steps before installation.
+### helm-chart/
 
-## Solution
+Contains the reusable Helm chart for TaskFlow.
 
-The deployment process was validated using:
+## monitoring/
 
-- helm lint
-- helm template
-- helm install
-- helm upgrade
-- helm rollback
+Contains the Prometheus and Grafana monitoring configuration.
 
-This ensured that the chart remained reusable and production-ready.
+It includes:
 
----
+- kube-prometheus-stack values
+- Monitoring documentation
+- Exported Grafana dashboard
 
-# Prometheus Installation
+## scripts/
 
-Installing the kube-prometheus-stack required downloading several large container images.
+Contains Bash automation scripts used by the project.
 
-The first deployment took considerably longer than expected.
+The current health-check script validates:
 
-## Solution
+- Docker availability
+- Docker Compose services
+- TaskFlow health endpoint
 
-The deployment was monitored until all containers became healthy before validating metrics and Grafana dashboards.
+## tests/
 
----
+Contains automated Pytest tests executed during the Jenkins pipeline.
 
-# GitHub Webhook
+## Dockerfile
 
-GitHub could not reach the Jenkins server because it was hosted on a private network.
+Defines how the TaskFlow application Docker image is built.
 
-## Solution
+## compose.yaml
 
-SCM Polling was configured in Jenkins, allowing repository changes to automatically trigger the pipeline without exposing Jenkins to the public Internet.
+Defines the local multi-container TaskFlow environment using Docker Compose.
 
----
+The stack includes:
 
-# Pull Request Workflow
+- TaskFlow
+- PostgreSQL
 
-A Pull Request was initially opened against an incorrect branch.
+## Jenkinsfile
 
-## Solution
+Defines the Jenkins CI/CD pipeline as code.
 
-The Pull Request was recreated using the correct target branch, keeping the Git history clean.
+The pipeline performs:
 
----
+- Validation
+- Build
+- Automated testing
+- Health checking
+- Docker image tagging
+- GHCR publishing
+- AWS deployment using Ansible
+- Deployment validation
+- Cleanup
 
-# Lessons from These Challenges
+## README.md
 
-Every challenge strengthened the overall quality of the project.
-
-The troubleshooting process provided practical experience with:
-
-- Docker
-- Jenkins
-- Git
-- AWS
-- Terraform
-- Ansible
-- Kubernetes
-- Helm
-- Prometheus
-- Grafana
-
-More importantly, these issues demonstrated how real-world DevOps projects require continuous debugging, validation and incremental improvements before reaching a stable production-ready solution.
+Provides the main project overview and entry point to the detailed documentation.

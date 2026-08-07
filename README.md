@@ -79,7 +79,6 @@ kubernetes/
 monitoring/
 scripts/
 tests/
-```
 
 ---
 

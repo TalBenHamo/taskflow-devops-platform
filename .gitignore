@@ -59,3 +59,5 @@ terraform.rc
 .Trash-*
 .nfs*
 tfplan
+# Kubernetes local secrets
+kubernetes/manifests/secret.yaml

@@ -11,6 +11,27 @@ The same Docker image is used across both environments and is stored in GitHub C
 
 ---
 
+## Kubernetes Secret Configuration
+
+The repository contains an example Kubernetes Secret file:
+
+```text
+kubernetes/manifests/secret.example.yaml
+```
+
+Before deploying the raw Kubernetes manifests, create a local Secret file:
+
+```bash
+cp kubernetes/manifests/secret.example.yaml \
+   kubernetes/manifests/secret.yaml
+```
+
+Update the local `secret.yaml` with the required database password.
+
+The local `secret.yaml` file is excluded from Git to prevent credentials from being committed to the repository.
+
+---
+
 # CI/CD Pipeline
 
 The Jenkins pipeline automates the CI/CD lifecycle for the AWS deployment path.
@@ -49,7 +70,7 @@ The trigger was validated successfully, with Jenkins builds starting automatical
 
 ```text
 Started by an SCM change
-
+```
 ---
 
 # Source Control
