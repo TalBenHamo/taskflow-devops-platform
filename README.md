@@ -65,12 +65,13 @@ Jenkins CI/CD
                  Prometheus
                      |
                   Grafana
+```
 
 ---
 
 # Repository Structure
 
-```
+```text
 app/
 ansible/
 docs/
@@ -79,8 +80,10 @@ kubernetes/
 monitoring/
 scripts/
 tests/
+```
 
 ---
+
 
 # Features
 
