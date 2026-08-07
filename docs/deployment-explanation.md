@@ -13,7 +13,7 @@ The same Docker image is used across both environments and is stored in GitHub C
 
 # CI/CD Pipeline
 
-The Jenkins pipeline automates the complete application lifecycle.
+The Jenkins pipeline automates the CI/CD lifecycle for the AWS deployment path.
 
 Pipeline stages:
 
@@ -32,6 +32,23 @@ Pipeline stages:
 13. Clean up temporary resources
 
 The pipeline is triggered automatically by repository changes using Jenkins SCM polling.
+
+---
+
+## Jenkins Trigger
+
+The Jenkins job tracks the `main` branch.
+
+Because Jenkins runs inside a private network, GitHub cannot directly reach the Jenkins webhook endpoint.
+
+SCM polling is therefore used to detect repository changes and automatically trigger the pipeline.
+
+The polling schedule is configured to check for repository changes approximately every two minutes.
+
+The trigger was validated successfully, with Jenkins builds starting automatically with:
+
+```text
+Started by an SCM change
 
 ---
 
