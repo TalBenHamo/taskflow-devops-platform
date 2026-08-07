@@ -1,81 +1,87 @@
 # Future Improvements
 
-## Infrastructure as Code
-
-Provision the AWS infrastructure using Terraform, including networking, security groups, and EC2 instances.
+Although TaskFlow demonstrates a complete DevOps workflow, several improvements can still be implemented using the technologies covered during the course.
 
 ---
 
-## Configuration Management
 
-Configure the Linux servers automatically using Ansible playbooks and roles.
+## Kubernetes Deployment Automation
 
----
+The current project validates Kubernetes and Helm deployments manually.
 
-## Continuous Deployment
-
-Extend the Jenkins pipeline to automatically deploy validated Docker images to the target environment.
+A future enhancement would integrate Helm deployment into the Jenkins pipeline, enabling fully automated deployment to Kubernetes after a successful build and test process.
 
 ---
 
-## Secret Management
+# Helm Deployment Automation
 
-Move application credentials and sensitive configuration out of the source code and into a secure secret management solution.
+Automate Helm installation and upgrades directly from the Jenkins pipeline.
 
----
+The pipeline would perform:
 
-## Container Security
-
-Improve the Docker image by:
-
-- Running the application as a non-root user.
-- Optimizing Docker layer caching.
-- Separating build and runtime dependencies.
+- Helm lint
+- Helm upgrade
+- Helm rollback (if needed)
 
 ---
 
-## Kubernetes
+# Additional Monitoring
 
-Deploy the application to Kubernetes using:
+Expand the current monitoring dashboards by adding:
 
-- Deployments
-- Services
-- ConfigMaps
-- Secrets
-- Persistent Volumes
-- Health Probes
+- Pod restart count
+- Deployment availability
+- PostgreSQL resource usage
+- Application response time
 
 ---
 
-## Helm
+# Additional Health Checks
 
-Package the Kubernetes deployment using Helm to simplify installation and upgrades.
+Add more application health endpoints, such as:
 
----
-
-## Monitoring
-
-Add Prometheus and Grafana to monitor:
-
-- Application availability
-- CPU usage
-- Memory usage
-- Container health
-- Database health
+- Database connectivity
+- Disk usage
+- Application version
+- Dependency status
 
 ---
 
-## Automated Backups
+# Automated Backup
 
-Implement scheduled PostgreSQL backups and recovery procedures.
+Create automated PostgreSQL backup scripts and verify database recovery procedures.
 
 ---
 
-## Additional Testing
+# Expanded Testing
 
-Expand automated testing to include:
+Increase test coverage by adding:
 
 - Integration Tests
 - API Tests
-- End-to-End Tests
 - Performance Tests
+
+These tests would improve deployment confidence before production releases.
+
+---
+
+# Kubernetes Scaling
+
+Configure automatic application scaling by increasing the number of replicas according to workload requirements.
+
+---
+
+# Improved Documentation
+
+Continue expanding the project documentation by adding:
+
+- Deployment diagrams
+- Troubleshooting guides
+- Operational procedures
+- Maintenance documentation
+
+---
+
+# Project Goal
+
+Continue improving TaskFlow by expanding automation, monitoring, testing and Kubernetes deployment while maintaining a fully automated DevOps workflow using the tools learned throughout the course.

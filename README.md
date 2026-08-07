@@ -35,43 +35,36 @@ The application is built with Flask and deployed using Docker, Kubernetes and He
 
 # Architecture
 
+```text
 Developer
-
-↓
-
-GitHub
-
-↓
-
-Jenkins Pipeline
-
-↓
-
-Build Docker Image
-
-↓
-
-Push to GHCR
-
-↓
-
-Deploy to Kubernetes
-
-↓
-
-Helm Release
-
-↓
-
-Ingress
-
-↓
-
-Prometheus
-
-↓
-
-Grafana
+    |
+    v
+GitHub Repository
+    |
+    v
+Jenkins CI/CD
+    |
+    +--> Validate
+    +--> Build Docker Image
+    +--> Automated Tests
+    +--> Health Check
+    +--> Tag Image
+    +--> Push Image to GHCR
+              |
+       +------+------+
+       |             |
+       v             v
+ AWS Deployment   Kubernetes Deployment
+       |             |
+    Ansible       Raw Manifests
+       |             |
+    AWS EC2          Helm
+                     |
+                   Ingress
+                     |
+                 Prometheus
+                     |
+                  Grafana
 
 ---
 

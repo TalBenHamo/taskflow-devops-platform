@@ -1,44 +1,39 @@
 # Lessons Learned
 
-## Docker Images and Containers
+The TaskFlow project provided practical experience across the complete DevOps lifecycle.
 
-A Docker image is a reusable template used to create containers.
-Containers are running instances of an image and have their own lifecycle.
-
----
-
-## Persistent Storage
-
-Application data should not be stored inside containers.
-
-PostgreSQL data is stored in a Docker volume, allowing the database to persist even after containers are recreated.
+Throughout the project, several important engineering lessons were learned.
 
 ---
 
-## Service Discovery
+# Docker
 
-Containers should communicate using service names defined in Docker Compose rather than container IP addresses.
+Docker images should be immutable and reusable.
 
-For example:
+The same Docker image can be used consistently across:
 
-- web
-- db
+- Local development
+- Jenkins CI
+- AWS deployment
+- Kubernetes deployment
 
----
-
-## Health Checks
-
-A running container is not always ready to accept connections.
-
-Health checks ensure that dependent services start only after the required service is fully operational.
+This guarantees consistency across environments.
 
 ---
 
-## CI Pipeline Design
+# Docker Compose
 
-A good CI pipeline should be divided into clear stages.
+Docker Compose is an excellent solution for local development and automated testing.
 
-Current TaskFlow pipeline:
+Running the complete application stack locally makes debugging faster and simplifies development.
+
+---
+
+# Jenkins
+
+A well-designed CI/CD pipeline should be divided into small, independent stages.
+
+TaskFlow follows this approach:
 
 1. Checkout
 2. Validate
@@ -46,23 +41,98 @@ Current TaskFlow pipeline:
 4. Test
 5. Health Check
 6. Tag Image
-7. Push Image
-8. Cleanup
+7. Push to GHCR
+8. Deploy
+9. Cleanup
 
-This makes failures easier to locate and troubleshoot.
-
----
-
-## Git Workflow
-
-Using feature branches and Pull Requests keeps the main branch stable and makes code reviews easier.
-
-Each completed feature is merged only after successful validation.
+This structure makes failures easy to identify and troubleshoot.
 
 ---
 
-## Documentation
+# Infrastructure as Code
 
-Documentation should be written continuously throughout the project rather than only before submission.
+Terraform demonstrated how infrastructure can be version-controlled and recreated consistently.
 
-Keeping documentation updated makes maintenance easier and helps other developers understand the project.
+Infrastructure should never be configured manually when automation is available.
+
+---
+
+# Configuration Management
+
+Ansible showed the importance of repeatable server configuration.
+
+An idempotent playbook guarantees that repeated executions produce consistent results without unnecessary changes.
+
+---
+
+# Kubernetes
+
+Kubernetes introduced several production concepts:
+
+- Declarative deployments
+- Self-healing
+- Replica management
+- Rolling updates
+- Rollback
+- Persistent storage
+- Health probes
+
+These features significantly improve application availability.
+
+---
+
+# Helm
+
+Helm simplifies Kubernetes deployments by packaging all Kubernetes resources into reusable charts.
+
+Using configurable values makes deployments portable across environments.
+
+---
+
+# Monitoring
+
+Monitoring is an essential part of every production system.
+
+Prometheus continuously collects metrics while Grafana provides real-time visualization of application health and resource consumption.
+
+Monitoring allows potential problems to be detected before users experience service disruption.
+
+---
+
+# Git Workflow
+
+Feature branches keep development isolated.
+
+Pull Requests provide a controlled review process before changes reach the main branch.
+
+This workflow improves collaboration and repository stability.
+
+---
+
+# Documentation
+
+Documentation should evolve together with the project.
+
+Maintaining documentation throughout development makes onboarding easier and helps future maintenance.
+
+---
+
+# Overall Lesson
+
+The most valuable lesson from TaskFlow is that successful DevOps is not a single technology.
+
+It is the integration of multiple tools working together:
+
+- Git
+- Docker
+- Jenkins
+- GitHub Container Registry
+- Terraform
+- AWS
+- Ansible
+- Kubernetes
+- Helm
+- Prometheus
+- Grafana
+
+Combining these technologies creates a reliable, automated and production-ready software delivery pipeline.

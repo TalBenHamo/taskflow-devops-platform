@@ -1,90 +1,139 @@
 # TaskFlow Architecture
 
-## Current Architecture
+TaskFlow is an end-to-end DevOps platform demonstrating modern application delivery using both traditional virtual machine deployment and Kubernetes orchestration.
 
-TaskFlow currently uses a containerized multi-service architecture managed by Docker Compose.
+The project supports two deployment paths while using the same Flask application and Docker image stored in GitHub Container Registry (GHCR).
+
+---
+
+## AWS Deployment
+
+The AWS deployment demonstrates a traditional infrastructure approach using Infrastructure as Code and Configuration Management.
+
+Deployment workflow:
 
 ```text
 Developer
     |
-    v
 GitHub Repository
     |
-    v
-Jenkins CI Pipeline
+Jenkins CI/CD
     |
-    +--> Validate Python syntax
-    +--> Build Docker image
-    +--> Start Docker Compose
-    +--> Run automated tests
-    +--> Health Check
-    +--> Tag Docker image
-    +--> Push image to GHCR
+Docker Build
     |
-    v
-GitHub Container Registry
-
-Local Environment
+Push Image to GHCR
     |
-    +--> Flask Container
+Ansible
     |
-    +--> PostgreSQL Container
+AWS EC2
     |
-    +--> Docker Volume
+Docker Compose
+    |
+TaskFlow + PostgreSQL
 ```
 
-## Components
+Main technologies:
 
-### Flask
-
-Provides the TaskFlow web application and health endpoint.
-
-### PostgreSQL
-
-Stores the application data.
-
-### Docker Compose
-
-Runs the application and database together.
-
-### Jenkins
-
-Runs the CI pipeline automatically.
-
-### GitHub Container Registry
-
-Stores the Docker images produced by Jenkins.
-
+- Jenkins CI/CD
+- Docker
+- GitHub Container Registry (GHCR)
+- Terraform
+- AWS EC2
+- Ansible
+- Docker Compose
 
 ---
 
-# Operating System Decision
+## Kubernetes Deployment
 
-The project uses **Ubuntu 22.04 LTS** as the primary Linux operating system.
+The Kubernetes deployment demonstrates a production-style container orchestration environment.
 
-Ubuntu was selected because it provides:
+Deployment options:
 
-- Long-Term Support (LTS)
-- Excellent compatibility with Docker, Jenkins, Terraform, Ansible, and Kubernetes
-- Stable package management
-- Large community support
+- Native Kubernetes Manifests
+- Helm Chart
 
-Administrative tasks are performed using **sudo**, while day-to-day work is executed using a regular user account.
+The deployment includes:
 
+- Namespace isolation
+- ConfigMap
+- Secret
+- Persistent Volume Claim (PVC)
+- PostgreSQL
+- Multi-replica TaskFlow Deployment
+- Kubernetes Service
+- Ingress
+- Readiness Probe
+- Liveness Probe
+- Rolling Updates
+- Rollback
+- Resource Requests and Limits
 
+---
 
+## Monitoring
 
+The Kubernetes environment is monitored using the Prometheus Community Stack.
 
+Monitoring components:
 
-
-## Future Architecture
-
-The next project phases will add:
-
-- AWS Infrastructure
-- Terraform
-- Ansible
-- Kubernetes
-- Helm
 - Prometheus
 - Grafana
+- Prometheus Operator
+- kube-state-metrics
+- Node Exporter
+
+Example monitored metrics:
+
+- Pod Health
+- CPU Usage
+- Memory Usage
+- Kubernetes Resource Utilization
+
+---
+
+## High-Level Architecture
+
+```text
+                    Developer
+                        |
+                        v
+               GitHub Repository
+                        |
+                        v
+                 Jenkins CI/CD
+                        |
+        +---------------+---------------+
+        |                               |
+   Build / Test                   Docker Image
+        |                               |
+        +---------------+---------------+
+                        |
+                        v
+                      GHCR
+                        |
+             +----------+----------+
+             |                     |
+             v                     v
+      AWS Deployment      Kubernetes Deployment
+             |                     |
+         Ansible                Helm
+             |                     |
+      Docker Compose           Ingress
+             |                     |
+      TaskFlow + PostgreSQL   TaskFlow + PostgreSQL
+                                      |
+                                      v
+                                 Prometheus
+                                      |
+                                      v
+                                   Grafana
+```
+
+---
+
+## Architecture Summary
+
+TaskFlow demonstrates two complete deployment strategies while keeping the application code identical across environments.
+
+The project combines Infrastructure as Code, Configuration Management, CI/CD automation, Kubernetes orchestration and production monitoring into a single end-to-end DevOps platform.
